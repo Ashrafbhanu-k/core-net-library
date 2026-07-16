@@ -2,7 +2,7 @@
 
 The Core Net Library (CNL) is a fundamental networking utility library in the RDK-B middleware that provides a comprehensive C API for network interface management, bridge operations, VLAN configuration, and routing table manipulation. This component serves as a critical abstraction layer between RDK-B middleware components and the underlying Linux networking subsystem, utilizing netlink sockets for kernel communication and providing a simplified, safe API for complex networking operations.
 
-This library enables RDK-B components to perform network configuration tasks without directly interfacing with low-level kernel APIs. It provides services essential for device networking functionality including interface state management, bridge creation and configuration, VLAN management, route table manipulation, and neighbor table operations. The component is designed to be thread-safe and provides error handling mechanisms that allow calling components to gracefully handle networking failures.
+This library enables RDK-B components to perform network configuration tasks without directly interfacing with low-level kernel APIs. It provides services essential for device networking functionality including interface state management, bridge creation and configuration, VLAN management, route table manipulation, and neighbor table operations. The component is intended to be usable from multiple threads (see Threading Model) and provides error handling mechanisms that allow calling components to gracefully handle networking failures.
 
 At the module level, the Core Net Library provides standardized APIs for network interface lifecycle management (create, configure, delete), bridge networking capabilities for creating software bridges and managing bridge ports, VLAN tagging and untagging functionality, routing table management for both IPv4 and IPv6, and neighbor table operations for ARP/NDP management.
 
@@ -122,7 +122,7 @@ graph LR
 - **VLAN Management**: Complete VLAN tagging and untagging capabilities including VLAN interface creation, deletion, and configuration with support for 802.1Q standards
 - **Routing Table Management**: Advanced routing operations including route addition/deletion, policy routing, rule management, and tunnel configuration for both IPv4 and IPv6
 - **Neighbor Table Operations**: ARP and NDP table management including neighbor entry creation, deletion, and neighbor discovery operations for network connectivity validation
-- **File-based Configuration**: Secure file I/O operations for reading and writing kernel parameters and network configuration files with proper error handling and validation
+- **File-based Configuration**: File I/O helper APIs for reading and writing kernel parameters and network configuration files
 
 ## Design
 
@@ -226,11 +226,11 @@ flowchart TD
 
 **Threading Model**
 
-The Core Net Library implements a thread-safe library design where each API call is atomic and self-contained. The component does not create or manage its own threads, but rather provides thread-safe functions that can be called from any thread context within consuming applications.
+The Core Net Library is intended to be usable from multiple threads: most APIs allocate per-call netlink sockets/caches and do not require explicit initialization. The library does not create or manage its own threads.
 
-- **Threading Architecture**: Single-threaded library with thread-safe API design - no internal threading model
-- **Main Thread**: All operations execute in the context of the calling thread with proper resource isolation and cleanup
-- **Synchronization**: Thread safety is achieved through stateless design and proper resource management - each function call manages its own netlink socket and resources independently
+- **Threading Architecture**: No internal threading; operations run in the calling thread
+- **Global State**: Some process-global state exists (e.g., log output configured via `set_log_fd()`); callers should set it during initialization and avoid changing it concurrently
+- **Synchronization**: No internal locking; thread safety relies on per-call resource allocation and on callers not mutating global configuration concurrently
 
 ### Component State Flow
 
@@ -347,7 +347,7 @@ The Core Net Library serves as a foundational networking component that is consu
 | **RDK-B Middleware Components** |  |  |
 | WAN Manager                     | Interface management, routing configuration for WAN connectivity   | `interface_up()`, `interface_down()`, `route_add()`, `addr_add()`     |
 | Ethernet Agent                  | Bridge operations, interface configuration for LAN networking      | `bridge_create()`, `interface_add_to_bridge()`, `interface_set_mac()` |
-| WiFi Agent                      | VLAN configuration, bridge port management for wireless networks   | `vlan_create()`, `bridge_add_interface()`, `bridge_set_stp()`         |
+| WiFi Agent                      | VLAN configuration, bridge port management for wireless networks   | `vlan_create()`, `interface_add_to_bridge()`, `bridge_set_stp()`      |
 | VLAN Manager                    | VLAN interface creation, tagging, and traffic segmentation         | `vlan_create()`, `vlan_delete()`, `interface_set_ip()`                |
 | Network Manager                 | IP address management, route table operations for network services | `addr_add()`, `route_add()`, `neighbour_get_list()`                   |
 | **System & Platform Layers**    |  |  |
