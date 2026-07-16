@@ -330,7 +330,7 @@ The Core Net Library is organized into specialized modules that handle different
 | **Interface Management** | Handles network interface operations including creation, configuration, IP address management, MAC address setting, MTU configuration, and interface state control (UP/DOWN) | `libnet.c` (interface\_\* functions), `libnet.h`                 |
 | **Bridge Operations**    | Manages Linux bridge functionality including bridge creation/deletion, STP configuration, bridge port addition/removal, and bridge information retrieval                     | `libnet.c` (bridge\_\* functions), `libnet.h`                    |
 | **VLAN Management**      | Provides VLAN tagging and untagging capabilities with support for 802.1Q VLAN creation, deletion, and configuration on network interfaces                                    | `libnet.c` (vlan\_\* functions), `libnet.h`                      |
-| **Routing Management**   | Handles routing table operations including route addition/deletion, policy routing rules, tunnel configuration, and multi-table routing support                              | `libnet.c` (route*\*, rule*\_, tunnel\_\_ functions), `libnet.h` |
+| **Routing Management**   | Handles routing table operations including route addition/deletion, policy routing rules, tunnel configuration, and multi-table routing support                              | `libnet.c` (`route_*`, `rule_*`, `tunnel_*` functions), `libnet.h` |
 | **Neighbor Operations**  | Manages ARP and NDP neighbor table operations including neighbor entry addition/deletion, neighbor discovery, and neighbor state monitoring                                  | `libnet.c` (neighbour\_\* functions), `libnet.h`                 |
 | **Address Management**   | Provides IP address configuration APIs including address assignment, netmask configuration, broadcast address derivation, and address family support                         | `libnet.c` (addr\_\* functions), `libnet.h`                      |
 | **File Operations**      | Secure file I/O utilities for reading and writing kernel parameters, configuration files, and system settings with proper error handling                                     | `libnet.c` (file_read, file_write), `libnet.h`                   |
@@ -344,13 +344,13 @@ The Core Net Library serves as a foundational networking component that is consu
 
 | Target Component/Layer          | Interaction Purpose                                                | Key APIs/Endpoints                                                    |
 | ------------------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------- |
-| **RDK-B Middleware Components** |
+| **RDK-B Middleware Components** |  |  |
 | WAN Manager                     | Interface management, routing configuration for WAN connectivity   | `interface_up()`, `interface_down()`, `route_add()`, `addr_add()`     |
 | Ethernet Agent                  | Bridge operations, interface configuration for LAN networking      | `bridge_create()`, `interface_add_to_bridge()`, `interface_set_mac()` |
 | WiFi Agent                      | VLAN configuration, bridge port management for wireless networks   | `vlan_create()`, `bridge_add_interface()`, `bridge_set_stp()`         |
 | VLAN Manager                    | VLAN interface creation, tagging, and traffic segmentation         | `vlan_create()`, `vlan_delete()`, `interface_set_ip()`                |
 | Network Manager                 | IP address management, route table operations for network services | `addr_add()`, `route_add()`, `neighbour_get_list()`                   |
-| **System & Platform Layers**    |
+| **System & Platform Layers**    |  |  |
 | Linux Kernel Networking         | Direct netlink communication for network stack operations          | Netlink socket messages, NETLINK_ROUTE protocol                       |
 | Filesystem Layer                | Kernel parameter access and configuration file management          | `/proc/sys/net/*`, `/sys/class/net/*` file operations                 |
 
@@ -428,7 +428,7 @@ The Core Net Library operates at a lower level than typical HAL abstractions, di
 
 - **Error Handling Strategy**: Robust error detection and reporting with detailed logging for debugging network configuration issues
   - Netlink error code translation to CNL status codes
-  - Comprehensive logging with CNL*LOG*\* macros for different severity levels
+  - Comprehensive logging with `CNL_LOG_*` macros for different severity levels
   - Graceful degradation and resource cleanup on failures
 
 - **Thread Safety Implementation**: Thread-safe design through stateless operation and proper resource isolation
