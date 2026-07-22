@@ -419,7 +419,7 @@ The Core Net Library operates at a lower level than typical HAL abstractions, di
 ### Key Implementation Logic
 
 - **Netlink Socket Management**: Core implementation centers around proper netlink socket lifecycle management with consistent patterns across all networking operations
-  - Socket allocation and connection in `libnet_util.c` (libnet_alloc_socket, libnet_connect)
+  - Socket allocation and connection in `libnet_util.c` (`libnet_alloc_socket()`, `libnet_connect()`)
   - Resource cleanup and error handling in each API function
 - **Resource Management**: Comprehensive resource management ensures no memory leaks or socket handle exhaustion
   - Automatic cleanup on both success and error paths
