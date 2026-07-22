@@ -15,10 +15,10 @@ graph TD
     end
 
     subgraph "RDK-B Middleware Layer"
-        WanMgr[WAN Manager]
+        WANMgr[WAN Manager]
         EthAgent[Ethernet Agent]
         WiFiAgent[WiFi Agent]
-        VlanMgr[VLAN Manager]
+        VLANMgr[VLAN Manager]
         NetworkMgr[Network Manager]
         CoreNetLib[Core Net Library]
     end
@@ -29,14 +29,14 @@ graph TD
         NetworkHAL[Network HAL]
     end
 
-    WebUI -->|Configuration Requests| WanMgr
+    WebUI -->|Configuration Requests| WANMgr
     Cloud -->|Remote Management| NetworkMgr
     SNMP -->|Status Queries| EthAgent
 
-    WanMgr -->|Interface Management| CoreNetLib
+    WANMgr -->|Interface Management| CoreNetLib
     EthAgent -->|Bridge Operations| CoreNetLib
     WiFiAgent -->|VLAN Configuration| CoreNetLib
-    VlanMgr -->|VLAN Management| CoreNetLib
+    VLANMgr -->|VLAN Management| CoreNetLib
     NetworkMgr -->|Route Management| CoreNetLib
 
     CoreNetLib -->|Netlink Messages| NetlinkAPI
@@ -49,7 +49,7 @@ graph TD
     classDef system fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px;
 
     class WebUI,Cloud,SNMP user;
-    class WanMgr,EthAgent,WiFiAgent,VlanMgr,NetworkMgr component;
+    class WANMgr,EthAgent,WiFiAgent,VLANMgr,NetworkMgr component;
     class CoreNetLib corelib;
     class NetlinkAPI,LinuxKernel,NetworkHAL system;
 ```
@@ -245,7 +245,7 @@ sequenceDiagram
     participant Netlink as Netlink Socket
     participant Kernel as Linux Kernel
 
-    App->>CNL: First API Call (e.g., interface_create)
+    App->>CNL: First API Call (e.g., interface_up)
     Note over CNL: State: Initializing<br/>Allocate socket, setup netlink connection
 
     CNL->>Netlink: Create Netlink Socket
@@ -333,7 +333,7 @@ The Core Net Library is organized into specialized modules that handle different
 | **Routing Management**   | Handles routing table operations including route addition/deletion, policy routing rules, tunnel configuration, and multi-table routing support                              | `libnet.c` (`route_*`, `rule_*`, `tunnel_*` functions), `libnet.h` |
 | **Neighbor Operations**  | Manages ARP and NDP neighbor table operations including neighbor entry addition/deletion, neighbor discovery, and neighbor state monitoring                                  | `libnet.c` (neighbour\_\* functions), `libnet.h`                 |
 | **Address Management**   | Provides IP address configuration APIs including address assignment, netmask configuration, broadcast address derivation, and address family support                         | `libnet.c` (addr\_\* functions), `libnet.h`                      |
-| **File Operations**      | Secure file I/O utilities for reading and writing kernel parameters, configuration files, and system settings with proper error handling                                     | `libnet.c` (file_read, file_write), `libnet.h`                   |
+| **File Operations**      | File I/O helper utilities for reading and writing kernel parameters, configuration files, and system settings                                                             | `libnet.c` (file_read, file_write), `libnet.h`                   |
 | **Netlink Utilities**    | Common netlink socket operations, memory management, cache handling, and error management functions shared across all networking modules                                     | `libnet_util.c`, `libnet_util.h`                                 |
 
 ## Component Interactions
